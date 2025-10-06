@@ -1,312 +1,177 @@
-import {
-  User,
-  Store,
-  Menu,
-  Order,
-  Review,
-  Notification,
-  Banner,
-  Ingredient,
-} from "@/types";
+// Tambahkan di dalam initializeDemoData (lanjutan demoStores)
 
-// Storage keys
-const STORAGE_KEYS = {
-  USERS: "scu_fos_users",
-  STORES: "scu_fos_stores",
-  MENUS: "scu_fos_menus",
-  ORDERS: "scu_fos_orders",
-  REVIEWS: "scu_fos_reviews",
-  NOTIFICATIONS: "scu_fos_notifications",
-  BANNERS: "scu_fos_banners",
-  INGREDIENTS: "scu_fos_ingredients",
-  CURRENT_USER: "scu_fos_current_user",
-  CART: "scu_fos_cart",
-} as const;
+const additionalSellers: User[] = [
+  {
+    id: "4",
+    email: "seller@kopikuy.com",
+    password: "kopikuy123",
+    role: "seller",
+    name: "Kopi Kuy",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "5",
+    email: "seller@satepadang.com",
+    password: "sate123",
+    role: "seller",
+    name: "Sate Padang Maknyus",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "6",
+    email: "seller@baksohebat.com",
+    password: "bakso123",
+    role: "seller",
+    name: "Bakso Hebat",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "7",
+    email: "seller@ayamgeprek.com",
+    password: "geprek123",
+    role: "seller",
+    name: "Ayam Geprek Mantul",
+    createdAt: new Date().toISOString(),
+  },
+];
+saveUsers([...getUsers(), ...additionalSellers]);
 
-// Generic storage functions
-export const getFromStorage = <T>(key: string): T[] => {
-  try {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
-  } catch {
-    return [];
-  }
-};
+const additionalStores: Store[] = [
+  {
+    id: "2",
+    sellerId: "4",
+    name: "Kopi Kuy",
+    image: "https://picsum.photos/400/300?random=11",
+    qrisImage: "https://picsum.photos/300/300?random=21",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "3",
+    sellerId: "5",
+    name: "Sate Padang Maknyus",
+    image: "https://picsum.photos/400/300?random=12",
+    qrisImage: "https://picsum.photos/300/300?random=22",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "4",
+    sellerId: "6",
+    name: "Bakso Hebat",
+    image: "https://picsum.photos/400/300?random=13",
+    qrisImage: "https://picsum.photos/300/300?random=23",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "5",
+    sellerId: "7",
+    name: "Ayam Geprek Mantul",
+    image: "https://picsum.photos/400/300?random=14",
+    qrisImage: "https://picsum.photos/300/300?random=24",
+    createdAt: new Date().toISOString(),
+  },
+];
+saveStores([...getStores(), ...additionalStores]);
 
-export const saveToStorage = <T>(key: string, data: T[]): void => {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error("Failed to save to storage:", error);
-  }
-};
+const additionalIngredients: Ingredient[] = [
+  {
+    id: "4",
+    sellerId: "4",
+    name: "Coffee Beans",
+    stock: 10,
+    unit: "kg",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "5",
+    sellerId: "5",
+    name: "Beef",
+    stock: 20,
+    unit: "kg",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "6",
+    sellerId: "6",
+    name: "Meatballs",
+    stock: 50,
+    unit: "pcs",
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "7",
+    sellerId: "7",
+    name: "Chicken Fillet",
+    stock: 30,
+    unit: "kg",
+    createdAt: new Date().toISOString(),
+  },
+];
+saveIngredients([...getIngredients(), ...additionalIngredients]);
 
-// User management
-export const getUsers = (): User[] => getFromStorage(STORAGE_KEYS.USERS);
-export const saveUsers = (users: User[]): void =>
-  saveToStorage(STORAGE_KEYS.USERS, users);
-
-export const getCurrentUser = (): User | null => {
-  try {
-    const user = localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
-    return user ? JSON.parse(user) : null;
-  } catch {
-    return null;
-  }
-};
-
-export const setCurrentUser = (user: User | null): void => {
-  if (user) {
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, JSON.stringify(user));
-  } else {
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
-  }
-};
-
-// Store management
-export const getStores = (): Store[] => getFromStorage(STORAGE_KEYS.STORES);
-export const saveStores = (stores: Store[]): void =>
-  saveToStorage(STORAGE_KEYS.STORES, stores);
-
-// Menu management
-export const getMenus = (): Menu[] => getFromStorage(STORAGE_KEYS.MENUS);
-export const saveMenus = (menus: Menu[]): void =>
-  saveToStorage(STORAGE_KEYS.MENUS, menus);
-
-export const getMenuById = (id: string): Menu | null => {
-  const menus = getMenus();
-  return menus.find((menu: Menu) => menu.id === id) || null;
-};
-
-export const getReviewsByMenuId = (menuId: string): Review[] => {
-  const reviews = getReviews();
-  return reviews.filter((review: Review) => review.menuId === menuId);
-};
-
-// Order management
-export const getOrders = (): Order[] => getFromStorage(STORAGE_KEYS.ORDERS);
-export const saveOrders = (orders: Order[]): void =>
-  saveToStorage(STORAGE_KEYS.ORDERS, orders);
-
-// Review management
-export const getReviews = (): Review[] => getFromStorage(STORAGE_KEYS.REVIEWS);
-export const saveReviews = (reviews: Review[]): void =>
-  saveToStorage(STORAGE_KEYS.REVIEWS, reviews);
-
-// Notification management
-export const getNotifications = (): Notification[] =>
-  getFromStorage(STORAGE_KEYS.NOTIFICATIONS);
-export const saveNotifications = (notifications: Notification[]): void =>
-  saveToStorage(STORAGE_KEYS.NOTIFICATIONS, notifications);
-
-// Banner management
-export const getBanners = (): Banner[] => getFromStorage(STORAGE_KEYS.BANNERS);
-export const saveBanners = (banners: Banner[]): void =>
-  saveToStorage(STORAGE_KEYS.BANNERS, banners);
-
-// Ingredient management
-export const getIngredients = (): Ingredient[] =>
-  getFromStorage(STORAGE_KEYS.INGREDIENTS);
-export const saveIngredients = (ingredients: Ingredient[]): void =>
-  saveToStorage(STORAGE_KEYS.INGREDIENTS, ingredients);
-
-// Cart management
-export const getCart = (): any[] => getFromStorage(STORAGE_KEYS.CART);
-export const saveCart = (cart: any[]): void =>
-  saveToStorage(STORAGE_KEYS.CART, cart);
-
-// Initialize demo data
-export const initializeDemoData = (): void => {
-  if (getUsers().length === 0) {
-    const demoUsers: User[] = [
-      {
-        id: "1",
-        email: "admin@scu.edu",
-        password: "admin123",
-        role: "admin",
-        name: "Admin SCU",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        email: "seller@example.com",
-        password: "seller123",
-        role: "seller",
-        name: "Warung Berkah",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "3",
-        email: "buyer@student.unika.ac.id",
-        password: "buyer123",
-        role: "buyer",
-        name: "John Student",
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    saveUsers(demoUsers);
-
-    const demoBanners: Banner[] = [
-      {
-        id: "1",
-        title: "Special Discount 20%",
-        description: "Get 20% off on all food items this week!",
-        image: "https://picsum.photos/800/200?random=1",
-        active: true,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        title: "New Menu Available",
-        description: "Try our delicious new Indonesian cuisine",
-        image: "https://picsum.photos/800/200?random=2",
-        active: true,
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    saveBanners(demoBanners);
-
-    const demoStores: Store[] = [
-      {
-        id: "1",
-        sellerId: "2",
-        name: "Warung Berkah",
-        image: "https://picsum.photos/400/300?random=10",
-        qrisImage: "https://picsum.photos/300/300?random=20",
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    saveStores(demoStores);
-
-    const demoIngredients: Ingredient[] = [
-      {
-        id: "1",
-        sellerId: "2",
-        name: "Rice",
-        stock: 100,
-        unit: "kg",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        sellerId: "2",
-        name: "Chicken",
-        stock: 50,
-        unit: "kg",
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "3",
-        sellerId: "2",
-        name: "Vegetables",
-        stock: 30,
-        unit: "kg",
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    saveIngredients(demoIngredients);
-
-    const demoMenus: Menu[] = [
-      {
-        id: "1",
-        sellerId: "2",
-        storeName: "Warung Berkah",
-        name: "Nasi Ayam Bakar",
-        description: "Grilled chicken with steamed rice and vegetables",
-        price: 15000,
-        image: "https://picsum.photos/400/300?random=30",
-        category: "Main Course",
-        ingredients: [
-          { ingredientId: "1", ingredientName: "Rice", quantity: 0.2 },
-          { ingredientId: "2", ingredientName: "Chicken", quantity: 0.3 },
-          { ingredientId: "3", ingredientName: "Vegetables", quantity: 0.1 },
-        ],
-        rating: 4.5,
-        reviewCount: 25,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "2",
-        sellerId: "2",
-        storeName: "Warung Berkah",
-        name: "Gado-Gado",
-        description: "Indonesian salad with peanut sauce",
-        price: 12000,
-        image: "https://picsum.photos/400/300?random=31",
-        category: "Salad",
-        ingredients: [
-          { ingredientId: "3", ingredientName: "Vegetables", quantity: 0.3 },
-        ],
-        rating: 4.2,
-        reviewCount: 18,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "3",
-        sellerId: "2",
-        storeName: "Warung Berkah",
-        name: "Nasi Gudeg",
-        description: "Traditional Javanese curry with rice",
-        price: 18000,
-        image: "https://picsum.photos/400/300?random=32",
-        category: "Main Course",
-        ingredients: [
-          { ingredientId: "1", ingredientName: "Rice", quantity: 0.25 },
-          { ingredientId: "2", ingredientName: "Chicken", quantity: 0.2 },
-          { ingredientId: "3", ingredientName: "Vegetables", quantity: 0.2 },
-        ],
-        rating: 4.8,
-        reviewCount: 42,
-        createdAt: new Date().toISOString(),
-      },
-      {
-        id: "4",
-        sellerId: "2",
-        storeName: "Warung Berkah",
-        name: "Es Teh Manis",
-        description: "Sweet iced tea, perfect refreshment",
-        price: 5000,
-        image: "https://picsum.photos/400/300?random=33",
-        category: "Beverages",
-        ingredients: [],
-        rating: 4.0,
-        reviewCount: 15,
-        createdAt: new Date().toISOString(),
-      },
-    ];
-    saveMenus(demoMenus);
-
-    const demoReviews: Review[] = [
-      {
-        id: "1",
-        orderId: "1",
-        buyerId: "3",
-        buyerName: "John Student",
-        menuId: "1",
-        menuName: "Nasi Ayam Bakar",
-        sellerId: "2",
-        rating: 5,
-        comment:
-          "Excellent grilled chicken! The seasoning is perfect and the rice is fluffy. Will order again!",
-        sellerResponse:
-          "Thank you for your kind review! We appreciate your feedback.",
-        createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
-        respondedAt: new Date(Date.now() - 43200000).toISOString(), // 12 hours ago
-      },
-      {
-        id: "2",
-        orderId: "2",
-        buyerId: "3",
-        buyerName: "John Student",
-        menuId: "3",
-        menuName: "Nasi Gudeg",
-        sellerId: "2",
-        rating: 4,
-        comment:
-          "Great traditional taste, very authentic. The portion is generous too.",
-        createdAt: new Date(Date.now() - 172800000).toISOString(), // 2 days ago
-      },
-    ];
-    saveReviews(demoReviews);
-  }
-};
+const additionalMenus: Menu[] = [
+  {
+    id: "5",
+    sellerId: "4",
+    storeName: "Kopi Kuy",
+    name: "Es Kopi Susu Gula Aren",
+    description: "Signature iced coffee with palm sugar and milk",
+    price: 18000,
+    image: "https://picsum.photos/400/300?random=34",
+    category: "Beverages",
+    ingredients: [
+      { ingredientId: "4", ingredientName: "Coffee Beans", quantity: 0.02 },
+    ],
+    rating: 4.7,
+    reviewCount: 30,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "6",
+    sellerId: "5",
+    storeName: "Sate Padang Maknyus",
+    name: "Sate Padang Komplit",
+    description: "Traditional Padang satay with spicy sauce and rice cake",
+    price: 20000,
+    image: "https://picsum.photos/400/300?random=35",
+    category: "Main Course",
+    ingredients: [
+      { ingredientId: "5", ingredientName: "Beef", quantity: 0.3 },
+    ],
+    rating: 4.6,
+    reviewCount: 22,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "7",
+    sellerId: "6",
+    storeName: "Bakso Hebat",
+    name: "Bakso Komplit",
+    description: "Meatball soup with noodles, tofu, and egg",
+    price: 17000,
+    image: "https://picsum.photos/400/300?random=36",
+    category: "Main Course",
+    ingredients: [
+      { ingredientId: "6", ingredientName: "Meatballs", quantity: 5 },
+    ],
+    rating: 4.4,
+    reviewCount: 28,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: "8",
+    sellerId: "7",
+    storeName: "Ayam Geprek Mantul",
+    name: "Ayam Geprek Level 5",
+    description: "Spicy smashed fried chicken with sambal",
+    price: 16000,
+    image: "https://picsum.photos/400/300?random=37",
+    category: "Main Course",
+    ingredients: [
+      { ingredientId: "7", ingredientName: "Chicken Fillet", quantity: 0.3 },
+    ],
+    rating: 4.9,
+    reviewCount: 35,
+    createdAt: new Date().toISOString(),
+  },
+];
+saveMenus([...getMenus(), ...additionalMenus]);
